@@ -1,18 +1,19 @@
 {
   "name": "gulp-packager",
-  "version": "1.0.1",
-  "description": "",
+  "version": "1.0.2",
+  "description": "The simplest js bundler for front-end development",
   "main": "index.js",
   "scripts": {
     "test": "echo \"ok\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["gulp", "import", "bundler", "javascript"],
+  "author": "Sanshain",
   "license": "ISC",
   "devDependencies": {    
-    "gulp-changed": "^4.0.2"
+    
   },
   "dependencies": {
+	"gulp-changed": "^4.0.2",
     "gulp-util": "^3.0.8",
     "through2": "^4.0.2",  
 	"gulp-rename": "^2.0.0",

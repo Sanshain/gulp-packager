@@ -50,7 +50,7 @@ and `init.ts`:
 import * as com from "./__common"
 
 var a = com.a;
-var c = 75408;
+var c = 7540;
 ```
 
 
