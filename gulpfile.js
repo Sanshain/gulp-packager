@@ -1,21 +1,30 @@
-var gulp = require('gulp');
-var integrate = require('./pack')
-var ts = require('gulp-typescript');
-var pack = require('./index')
 
-var rename = require("gulp-rename");
+const gulp = require('gulp');
+const ts = require('gulp-typescript');
+
+var cache = require('gulp-cached');
+
+let pack = require('./index')
+
+// const changed = require('gulp-changed');
+// var rename = require("gulp-rename");
 
 gulp.task('build', function() {
     
     // .pipe(rename((path) => path.extname = '.js')) 
+    // .pipe(changed('samples'))  
 
-    return gulp.src('./samples/**/init.ts') 
-        .pipe(pack({ release : true }))        
-        .pipe(ts())                                             
+    let src = './samples/**/init.ts';
+    
+    return gulp.src(src)                       
+        .pipe(cache(src))                                                
+        .pipe(pack({ release : true }))   
+        .pipe(ts())    
         .pipe(gulp.dest('./samples'))
 });
 
 
-gulp.task('watch', () => gulp.watch('samples/**/*.ts', gulp.series('build'))); 
+// gulp.task('watch', () => gulp.watch('samples/**/*.ts', gulp.series('build'))); 
+// gulp.task('default', gulp.series('build', 'watch'));
 
-gulp.task('default', gulp.series('build', 'watch'));
+gulp.task('default', gulp.series('build'));
