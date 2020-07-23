@@ -12,6 +12,12 @@ The simplest vanilla ts/js **packager** supporting base import/export operation.
 npm install Sanshain/gulp-packager
 ```
 
+or 
+
+```
+npm i gulp-packager
+```
+
 ## Examples
 
 For descriptive reasons the examples below assumes the following task in `gulpfile.js`:
@@ -127,5 +133,14 @@ Besides using `import * as name from './...'`, `import {name} from './...'` you 
 But this option does not intended for types/class imports - what will you get a hint about in this case
 
 
+## Other featres: 
 
+If you need to skip some `import` statements, you should to wrap it into following comment with `lazy` keyword:
 
+```js
+/*-lazy*/
+import * as lazy from "./__common"
+/*lazy-*/
+```
+
+In this case the multiple comments with `lazy` word in output file will be removed including all `import` content between them
