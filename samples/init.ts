@@ -1,7 +1,8 @@
 
 
-import * as com from "./__common"
+import {months, Ads} from "./__common"
+// import "./__common";
 
-var a = 38111;
+var a = months;
 
-var c = 754089;
+var c = 754;
