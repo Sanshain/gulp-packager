@@ -1,4 +1,3 @@
-/*start of __common*/
 {
     var months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     var r = 7;
@@ -22,5 +21,5 @@
         Asde: Asde
     };
 }
-/*end*/
-var a = 5;
+var a = 381;
+var c = 75;

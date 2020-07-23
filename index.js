@@ -11,13 +11,15 @@ module.exports = (options) => {
   // Какие-то действия с опциями. Например, проверка их существования,
   // задание значения по умолчанию и т.д.
 
+  // options = {release : true}
+
   return through.obj(function(file, enc, cb) {
     // Если файл не существует
     if (file.isNull()) {
       cb(null, file);
       return;
     }
-
+    
     // Если файл представлен потоком
     if (file.isStream()) {
       cb(new gutil.PluginError('gulp-import', 'Streaming not supported'));
@@ -29,7 +31,7 @@ module.exports = (options) => {
         let execpath = path.dirname(file.path)        
 
         var data = file.contents.toString();
-        data = pack.combine(data, execpath)
+        data = pack.combine(data, execpath, options)
 
         file.contents = Buffer.from(data);
         this.push(file);

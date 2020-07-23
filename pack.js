@@ -11,21 +11,25 @@ var exportedFiles = []
 exports.combine = combine;
 exports.integrate = integrate;
 
-function combine(content, dirpath){
+
+
+function combine(content, dirpath, options){
     
+    exportedFiles = []
+
     content = removeLazy(content)
 
-    content = importInsert(content, dirpath);
+    content = importInsert(content, dirpath, options);
 
     return content;
 }
 
-function integrate(from, to){    
+function integrate(from, to, options){    
 
     let content = fs.readFileSync(from).toString();        
     let filename = path.resolve(from);
-
-    content = combine(content, path.dirname(filename))
+    
+    content = combine(content, path.dirname(filename), options)
 
     to = to || path.parse(filename).dir + path.sep + path.parse(filename).name + '.js';
 
@@ -39,9 +43,8 @@ class pathMan {
     }
 }
 
-function importInsert(content, dirpath){
+function importInsert(content, dirpath, options){
     let pathman = new pathMan(dirpath);
-
     
     let regex = /^import \* as (?<module>\w+) from \"\.\/(?<filename>\w+)\"/gm;            
     content = content.replace(regex, unitsPack.bind(pathman));
@@ -51,12 +54,14 @@ function importInsert(content, dirpath){
     content = content.replace(regex, allocPack.bind(pathman)); //*/
 
     regex = /^import {([\w, ]+)} from \".\/(\w+)\"/gm
-    content = content.replace(regex, wrapsPack.bind(pathman)); //*/
-
-    // remove comments:
-    /*
-    content = content.replace(/\/\*[\s\S]*?\*\//g, '')
-    content = content.replace(/\/\/[\s\S]*?\n/g, '\n'); //*/
+    content = content.replace(regex, wrapsPack.bind(pathman)); //*/    
+    
+    if (options && options.release)
+    {
+        // remove comments:
+        content = content.replace(/\/\*[\s\S]*?\*\//g, '')
+        content = content.replace(/\/\/[\s\S]*?\n/g, '\n'); //*/
+    }
 
     return content
 }

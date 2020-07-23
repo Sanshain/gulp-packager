@@ -9,13 +9,14 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "gulp": "^4.0.2"
-  },
-  "dependencies": {
-    "gulp-typescript": "^6.0.0-alpha.1",
+  "devDependencies": {    
+    "gulp-rename": "^2.0.0",
     "gulp-util": "^3.0.8",
-    "through2": "^4.0.2",
+    "through2": "^4.0.2" 
+  },
+  "dependencies": {   
+    "gulp": "^4.0.2",     
+    "gulp-typescript": "^6.0.0-alpha.1",
     "typescript": "^3.9.7"
   }
 }
