@@ -120,8 +120,9 @@ Recommends to use `import {name} from "./filename"` statement just for independe
 despite the fact that the standard allows such actions, the use of global variables in object-oriented programming is considered a bad practice among developers.
 This is why we did not include support for this feature. 
 
-If you have many global constants or variables in the imported file, use  `import * as name from './filename'` statement instead and 
-never use its with `class` and `type` declaration in same file.
+If you have many global constants or variables in the imported file, please use  `import * as name from './filename'` statement instead.
+
+I should also note that this plugin does not currently support importing npm packages. If your needs are beyond the scope of this package, I suggest using [rollup](https://www.npmjs.com/package/rollup).
 
 ## options:
 
