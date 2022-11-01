@@ -33,7 +33,9 @@ function integrate(from, to, options){
 
     to = to || path.parse(filename).dir + path.sep + path.parse(filename).name + '.js';
 
-    fs.writeFileSync(to, content)    
+    fs.writeFileSync(to, content)
+    
+    return content
 }
 
 class pathMan {
