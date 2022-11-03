@@ -95,21 +95,23 @@ const modules = {};
  */
 function namedImports(content) {    
     
-    const regex = /^import (((\{([\w, ]+)\})|([\w, ]+)|(\* as \w+)) from )?\".\/(\w+)\"/gm;
+    const regex = /^import (((\{([\w, ]+)\})|([\w, ]+)|(\* as \w+)) from )?\".\/([\w\-\/]+)\"/gm;
     const imports = new Set();
 
     const _content = content.replace(regex, (match, __, $, $$, /** @type string */ classNames, defauName, moduleName, fileName, offset, source) => {
 
-        if (!modules[fileName]) this.moduleStamp(fileName);
-        if (defauName && inspectUnique(defauName)) return `const { default: ${defauName} } = $$${fileName}Exports;`;
-        else if (moduleName) return `const ${moduleName} = $$${fileName}Exports;`;
+        const fileStoreName = fileName.replace(/\//g, '$')
+
+        if (!modules[fileStoreName]) this.moduleStamp(fileName);
+        if (defauName && inspectUnique(defauName)) return `const { default: ${defauName} } = $$${fileStoreName}Exports;`;
+        else if (moduleName) return `const ${moduleName} = $$${fileStoreName}Exports;`;
         else {
             let entities = classNames.split(',').map(w => (~w.indexOf(' as ') ? (`${w.split(' ').shift()}: ${w.split(' ').pop()}`) : w).trim());
             for (let entity of entities) {
                 if (!~entity.indexOf(':')) entity = entity.split(': ').pop()
                 inspectUnique(entity);
             }
-            return `const { ${classNames} } = $$${fileName}Exports;`;
+            return `const { ${classNames} } = $$${fileStoreName}Exports;`;
         }
     });
 
@@ -142,7 +144,9 @@ function namedImports(content) {
  */
 function moduleSealing(fileName){
 
-    let content = this.pathMan.getContent(fileName)
+    let content = this.pathMan.getContent(fileName);
+    const fileStoreName = fileName.replace(/\//g, '$');
+    
     if (content == '') return '';
     else {
         content = namedImports(content);
@@ -156,17 +160,17 @@ function moduleSealing(fileName){
     let matches = Array.from(content.matchAll(/^export (class|function|let|const|var) ([\w_\n]+)?[\s]*=?[\s]*/gm));    
     let _exports = matches.map(u => u[2]).join(', ');
 
-    let defauMatch = Array.from(content.match(/^export default ([\w_\n]+)/m));
+    let defauMatch = content.match(/^export default ([\w_\n]+)/m);
     if (defauMatch) {
         _exports += ', default: ' + defauMatch[1]
     }
 
     _exports = `exports = { ${_exports} };\n`
-
+    
     content = content.replace(/^export (default )?/g, '') + '\n\n' + _exports + '\n' + 'return exports';
-    content = `const $$${fileName}Exports = (function (exports) {\n ${content.split('\n').join('\n\t')} \n})({})`
+    content = `const $$${fileStoreName}Exports = (function (exports) {\n ${content.split('\n').join('\n\t')} \n})({})`
 
-    modules[fileName] = content;
+    modules[fileStoreName] = content;
     
     // content = `\n/*start of ${fileName}*/\n${match.trim()}\n/*end*/\n\n` 
 

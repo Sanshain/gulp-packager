@@ -3,26 +3,31 @@
 //@modules:
 
 
-const $$__commonExports = (function (exports) {
- 
+const $$button$__commonExports = (function (exports) {
+ let months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 	let r = 7
-	function asd(){}
+	export var a = 66;
 	
-	export let months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-	export var a = 6;
 	export function Ads(arg){
 	
-	
 	}
-	// export class Asde{}
 	
-	export default function () {
+	function asd(){
 	    
 	}
 	
+	export function f(){
+	    
+	}
 	
+	export class Asde
+	{
+		constructor(){
+			
+		}
+	}
 	
-	exports = { months, a, Ads, default: function };
+	exports = { months, a, Ads, f, Asde };
 	
 	return exports 
 })({})
@@ -31,7 +36,8 @@ const $$__commonExports = (function (exports) {
 //@init.ts: 
 
 
-const { months, Ads } = $$__commonExports;
+const {  months, Ads  } = $$button$__commonExports;
+// import { months, Ads } from "./__common"
 // import "./__common";
 
 var a = months;
