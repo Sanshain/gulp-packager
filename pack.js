@@ -91,18 +91,19 @@ const modules = {};
 /**
  * replace imports to object spreads and separate modules
  * @param {string} content
- * @this Importer
+ * @param {string?} [root]
+ * @this {Importer}
  */
-function namedImports(content) {    
+function namedImports(content, root) {    
     
     const regex = /^import (((\{([\w, ]+)\})|([\w, ]+)|(\* as \w+)) from )?\".\/([\w\-\/]+)\"/gm;
     const imports = new Set();
 
     const _content = content.replace(regex, (match, __, $, $$, /** @type string */ classNames, defauName, moduleName, fileName, offset, source) => {
 
-        const fileStoreName = fileName.replace(/\//g, '$')
+        const fileStoreName = ((root || '') + fileName).replace(/\//g, '$')
 
-        if (!modules[fileStoreName]) this.moduleStamp(fileName);
+        if (!modules[fileStoreName]) this.moduleStamp(fileName, root || undefined);
         if (defauName && inspectUnique(defauName)) return `const { default: ${defauName} } = $$${fileStoreName}Exports;`;
         else if (moduleName) return `const ${moduleName} = $$${fileStoreName}Exports;`;
         else {
@@ -140,16 +141,23 @@ function namedImports(content) {
 /**
  * seal module
  * @param {string} fileName
- * @this Importer
+ * @param {string?} root
+ * @this {Importer} 
  */
-function moduleSealing(fileName){
+function moduleSealing(fileName, root){
 
-    let content = this.pathMan.getContent(fileName);
-    const fileStoreName = fileName.replace(/\//g, '$');
-    
+    // extract path:
+
+    let content = this.pathMan.getContent(fileName);        
+
+    const fileStoreName = ((root || '') + fileName).replace(/\//g, '$');    
+
     if (content == '') return '';
     else {
-        content = namedImports(content);
+        let _dir = path.dirname(fileName);
+        _dir = (_dir === '.' ? '' : _dir);        
+        const _root = (root ? (root + (_dir ? '/' : '')) : '') + _dir;
+        content = namedImports(content, _root);
     }
     
     // matches1 = Array.from(content.matchAll(/^export (let|var) (\w+) = [^\n]+/gm))
