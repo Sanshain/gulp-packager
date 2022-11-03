@@ -1,3 +1,5 @@
+//@ts-check
+
 // import "fs";
 
 const fs = require("fs");
@@ -27,9 +29,9 @@ function combine(content, dirpath, options){
 function integrate(from, to, options){    
 
     let content = fs.readFileSync(from).toString();        
-    let filename = path.resolve(from);
-    
-    content = combine(content, path.dirname(filename), options)
+    let filename = path.resolve(from);    
+
+    content = combine(content, path.dirname(filename), Object.assign({ entryPoint: path.basename(filename)}, options))
 
     to = to || path.parse(filename).dir + path.sep + path.parse(filename).name + '.js';
 
@@ -38,25 +40,38 @@ function integrate(from, to, options){
     return content
 }
 
-class pathMan {
+class PathMan {
     constructor(dirname) {
         this.dirPath = dirname;
         this.getContent = getContent;
     }
 }
 
+
+class Importer {
+    constructor(pathMan) {
+        this.namedImportsApply = namedImports;
+        this.moduleStamp = moduleSealing;
+        this.pathMan = pathMan;
+    }
+}
+
+
+
 function importInsert(content, dirpath, options){
-    let pathman = new pathMan(dirpath);
+    let pathman = new PathMan(dirpath);
     
-    let regex = /^import \* as (?<module>\w+) from \"\.\/(?<filename>\w+)\"/gm;            
-    content = content.replace(regex, unitsPack.bind(pathman));
+    // let regex = /^import \* as (?<module>\w+) from \"\.\/(?<filename>\w+)\"/gm;            
+    content = new Importer(pathman).namedImportsApply(content);
+
+    content = '\n\n//@modules:\n\n\n' + Object.values(modules).join('\n\n') + `\n\n\n//@${options.entryPoint}: \n` + content;
 
     ///* not recommended, but easy for realization:
-    regex = /^import \"\.\/(?<filename>\w+)\"/gm;
-    content = content.replace(regex, allocPack.bind(pathman)); //*/
+    // const regex = /^import \"\.\/(?<filename>\w+)\"/gm;    
+    // content = content.replace(regex, allocPack.bind(pathman)); //*/
 
-    regex = /^import {([\w, ]+)} from \".\/(\w+)\"/gm
-    content = content.replace(regex, wrapsPack.bind(pathman)); //*/    
+    // regex = /^import {([\w, ]+)} from \".\/(\w+)\"/gm
+    // content = content.replace(moduleSealing.bind(pathman)); //*/
     
     if (options && options.release)
     {
@@ -69,30 +84,96 @@ function importInsert(content, dirpath, options){
 }
 
 
-function wrapsPack(match, classNames, fileName, offset, source){
+const modules = {};
 
-    content = this.getContent(fileName)
-    if (content == '') return ''
 
-    classNames = classNames.split(',').map(s => s.trim())
-    matches1 = Array.from(content.matchAll(/^export (let|var) (\w+) = [^\n]+/gm))    
-    matches2 = Array.from(content.matchAll(/^export (function) (\w+)[ ]*\([\w, ]*\)[\s]*{[\w\W]*?\n}/gm))
-    matches3 = Array.from(content.matchAll(/^export (class) (\w+)([\s]*{[\w\W]*?\n})/gm))
-    var matches = matches1.concat(matches2, matches3);
 
-    var match = ''
-    for (let unit of matches)
-    {
-        if (classNames.includes(unit[2])){
-            
-            match += unit[0].substr(7) + '\n\n'
-        }        
+/**
+ * replace imports to object spreads and separate modules
+ * @param {string} content
+ * @this Importer
+ */
+function namedImports(content) {    
+    
+    const regex = /^import (((\{([\w, ]+)\})|([\w, ]+)|(\* as \w+)) from )?\".\/(\w+)\"/gm;
+    const imports = new Set();
+
+    const _content = content.replace(regex, (match, __, $, $$, /** @type string */ classNames, defauName, moduleName, fileName, offset, source) => {
+
+        if (!modules[fileName]) this.moduleStamp(fileName);
+        if (defauName && inspectUnique(defauName)) return `const { default: ${defauName} } = $$${fileName}Exports;`;
+        else if (moduleName) return `const ${moduleName} = $$${fileName}Exports;`;
+        else {
+            let entities = classNames.split(',').map(w => (~w.indexOf(' as ') ? (`${w.split(' ').shift()}: ${w.split(' ').pop()}`) : w).trim());
+            for (let entity of entities) {
+                if (!~entity.indexOf(':')) entity = entity.split(': ').pop()
+                inspectUnique(entity);
+            }
+            return `const { ${classNames} } = $$${fileName}Exports;`;
+        }
+    });
+
+
+    return _content;
+
+
+    /**
+     * @param {string} entity
+     */
+    function inspectUnique(entity) {
+
+        if (imports.has(entity)) {
+            console.warn('Duplicating the imported name')
+            return false
+        }
+        else {
+            imports.add(entity);
+            return true;
+        }
+    }
+}
+
+
+
+/**
+ * seal module
+ * @param {string} fileName
+ * @this Importer
+ */
+function moduleSealing(fileName){
+
+    let content = this.pathMan.getContent(fileName)
+    if (content == '') return '';
+    else {
+        content = namedImports(content);
     }
     
-    content = `\n/*start of ${fileName}*/\n${match.trim()}\n/*end*/\n\n` 
+    // matches1 = Array.from(content.matchAll(/^export (let|var) (\w+) = [^\n]+/gm))
+    // matches2 = Array.from(content.matchAll(/^export (function) (\w+)[ ]*\([\w, ]*\)[\s]*{[\w\W]*?\n}/gm))
+    // matches3 = Array.from(content.matchAll(/^export (class) (\w+)([\s]*{[\w\W]*?\n})/gm))
+    // var matches = matches1.concat(matches2, matches3);
+
+    let matches = Array.from(content.matchAll(/^export (class|function|let|const|var) ([\w_\n]+)?[\s]*=?[\s]*/gm));    
+    let _exports = matches.map(u => u[2]).join(', ');
+
+    let defauMatch = Array.from(content.match(/^export default ([\w_\n]+)/m));
+    if (defauMatch) {
+        _exports += ', default: ' + defauMatch[1]
+    }
+
+    _exports = `exports = { ${_exports} };\n`
+
+    content = content.replace(/^export (default )?/g, '') + '\n\n' + _exports + '\n' + 'return exports';
+    content = `const $$${fileName}Exports = (function (exports) {\n ${content.split('\n').join('\n\t')} \n})({})`
+
+    modules[fileName] = content;
+    
+    // content = `\n/*start of ${fileName}*/\n${match.trim()}\n/*end*/\n\n` 
 
     return content;
 }
+
+
 
 function unitsPack(match, modulName, fileName, offset, source){
 

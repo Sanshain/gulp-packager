@@ -9,3 +9,8 @@ export function Ads(arg){
 
 }
 // export class Asde{}
+
+export default function () {
+    
+}
+

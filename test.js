@@ -8,6 +8,7 @@ console.log(__dirname)
 path = path.substr(__dirname.length + 1);//*/
 
 // imports.integrate("samples/prime.ts")
+// const r = imports.integrate("samples/init.ts")
 const r = imports.integrate("samples/init.ts")
 console.log(r);
 
