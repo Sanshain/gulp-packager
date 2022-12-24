@@ -14,7 +14,13 @@ exports.combine = combine;
 exports.integrate = integrate;
 
 
-
+/**
+ * 
+ * @param {string} content : ;
+ * @param {*} dirpath - source directory name
+ * @param {{ entryPoint: string; release: boolean; }} options
+ * @returns 
+ */
 function combine(content, dirpath, options){
     
     exportedFiles = []
@@ -26,6 +32,13 @@ function combine(content, dirpath, options){
     return content;
 }
 
+/**
+ * 
+ * @param {string} from - file name
+ * @param {string} to - target name
+ * @param {{ entryPoint: string; release: boolean; }} options - options
+ * @returns 
+ */
 function integrate(from, to, options){    
 
     let content = fs.readFileSync(from).toString();        
@@ -40,6 +53,9 @@ function integrate(from, to, options){
     return content
 }
 
+/**
+ * path manager
+ */
 class PathMan {
     constructor(dirname) {
         this.dirPath = dirname;
@@ -58,7 +74,14 @@ class Importer {
 
 
 
+/**
+ * 
+ * @param {string} content - content (source code)
+ * @param {string} dirpath - source directory name
+ * @param {{ entryPoint: string; release: boolean; }} options - options
+ */
 function importInsert(content, dirpath, options){
+    
     let pathman = new PathMan(dirpath);
     
     // let regex = /^import \* as (?<module>\w+) from \"\.\/(?<filename>\w+)\"/gm;            
@@ -93,9 +116,30 @@ const modules = {};
  * @param {string} content
  * @param {string?} [root]
  * @this {Importer}
+ * 
+ * @example:
+ * 
+ * Supports following forms:
+ * 
+ * ```
+ * import defaultExport from "module_name";
+ * import * as name from "./module-name"
+ * import { export } from "./module_name"
+ * import { export as alias } from "./module_name"
+ * import { export1, export2 } from "./module_name"
+ * import { export1, export2 as a } from "./module_name"
+ * import "./module_name"
+ * ```
+ * 
+ * Unsupported yet:
+ * ```
+ * import defaultExport, * as name from "./module-name";
+ * import defaultExport, { tt } from "./module-name";
+ * ```
  */
 function namedImports(content, root) {    
     
+    // const regex = /^import (((\{([\w, ]+)\})|([\w, ]+)|(\* as \w+)) from )?".\/([\w\-\/]+)"/gm;
     const regex = /^import (((\{([\w, ]+)\})|([\w, ]+)|(\* as \w+)) from )?\".\/([\w\-\/]+)\"/gm;
     const imports = new Set();
 
@@ -175,7 +219,7 @@ function moduleSealing(fileName, root){
 
     _exports = `exports = { ${_exports} };\n`
     
-    content = content.replace(/^export (default )?/g, '') + '\n\n' + _exports + '\n' + 'return exports';
+    content = content.replace(/^export (default )?/gm, '') + '\n\n' + _exports + '\n' + 'return exports';
     content = `const $$${fileStoreName}Exports = (function (exports) {\n ${content.split('\n').join('\n\t')} \n})({})`
 
     modules[fileStoreName] = content;
@@ -185,66 +229,6 @@ function moduleSealing(fileName, root){
     return content;
 }
 
-
-
-function unitsPack(match, modulName, fileName, offset, source){
-
-    content = this.getContent(fileName)
-    if (content == '') return ''
-
-    let exportList = []
-
-    content = content.replace(/^(let|var) /gm, 'let ')
-    content = content.replace(/^export (let|var|function|class) (\w+)/gm, 
-    function(match, declType, varName, offset, source)
-    {
-        // exportList[varName] = varName
-
-        postfix = ''
-        if (declType == 'function') postfix = '.bind(window)'
-        exportList.push('\t\t' + varName + ":" + varName)
-        return declType + ' ' + varName;
-    });
-
-    var unitObj = exportList.join(',\n')
-    content += `\n\nvar ${modulName} = {\n ${unitObj} \n}`
-
-    content = '{\n' + content.replace(/^([\S \t])/gm, '    $1') + '\n}'    
-
-    content = `\n/*start of ${fileName}*/\n${content}\n/*end*/\n\n`    
-
-    return content;
-}
-
-function allocPack(match, fileName, offset, source){
-
-    content = this.getContent(fileName)
-    if (content == '') return ''
-
-    var simple = false;
-    if (simple){
-        // w/o unique check of variable names! ie- supports
-        content = content.replace(/^export /gm, '')    
-    }
-    else{
-        // vs unique check of variable names! ie11+
-        content = content.replace(/^(let|var) /gm, 'let ')
-        content = content.replace(/^export (let|var) /gm, 'var ')            
-        content = content.replace(/^export function (?<funcname>\w+)\(/gm, 'var $1 = function(')
-        
-        var warn = /^export (class) (\w+)/gm.exec(content);
-        if (warn){
-            throw new Error(`use "import {${warn[2]}} from './${fileName}'" `+
-                        `statement for class import instead of common import *`)
-        }
-        content = '{\n' + content.replace(/^([\S])/gm, '    $1') + '\n}'
-        
-    }
-    
-    content = `\n/*start of ${fileName}*/\n${content}\n/*end*/\n\n`    
-
-    return content;
-}
 
 
 
@@ -278,7 +262,11 @@ function getContent(fileName){
 }
 
 
+/**
+ * Remove code fragments marked as lazy inclusions
+ * @param {string} content - content
+ */
 function removeLazy(content){    
 
-    return content.replace(/\/\*-lazy\*\/[\s\S]*?\/\*lazy-\*\//, '');    
+    return content.replace(/\/\*@lazy\*\/[\s\S]*?\/\*_lazy\*\//, '');    
 }

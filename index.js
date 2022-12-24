@@ -3,7 +3,7 @@
 const gutil = require('gulp-util');
 const through = require('through2');
 
-const pack = require('./pack')
+const compile = require('./pack').combine;
 const path = require('path');
 
 
@@ -28,14 +28,15 @@ module.exports = (options) => {
 
     try {        
 
-        let execpath = path.dirname(file.path)        
+      let execpath = path.dirname(file.path)        
 
-        var data = file.contents.toString();
-        data = pack.combine(data, execpath, options)
+      var source = file.contents.toString();
+      source = compile(source, execpath, options)
 
-        file.contents = Buffer.from(data);
-        this.push(file);
-      } catch (err) {
+      file.contents = Buffer.from(source);
+      this.push(file);
+
+    } catch (err) {
         this.emit('error', new gutil.PluginError('gulp-import', err));
     }
 
