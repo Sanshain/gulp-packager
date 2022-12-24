@@ -37,69 +37,82 @@ gulp.task('build', function() {
 });
 ```
 
-### gulp example 
+### gulp example: expand the detail:
 
-`__common.ts` file: 
-
-```javascript
-export let months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-let r = 7
-export var a = 66;
-
-export function Ads(arg){}
-
-function asd(){}
-
-export function f(){}
-
-export class Asde{constructor(){}}
-```
-
-and `init.ts`:
-
-```typescript
-import { months, Ads } from "./button/__common"
-
-var a = months;
-
-var c = 754;
-
-console.log(a);
-```
+<details>
+<summary>gulp example</summary>
 
 
-turn out the content inside `init.js` in the same directory:
+		#### source:
 
-```js
-const $$button$__commonExports = (function (exports) {
- let months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-	let r = 7
-	var a = 66;
-	
-	function Ads(arg){}
-	
-	function asd(){}
-	
-	function f(){}
-	
-	class Asde{constructor(){}}
-	
-	exports = { months, a, Ads, f, Asde };
-	
-	return exports 
-})({})
+		`__common.ts` file: 
+
+		```javascript
+		export let months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+		let r = 7
+		export var a = 66;
+
+		export function Ads(arg){}
+
+		function asd(){}
+
+		export function f(){}
+
+		export class Asde{constructor(){}}
+		```
+
+		and `init.ts`:
+
+		```typescript
+		import { months, Ads } from "./button/__common"
+
+		var a = months;
+
+		var c = 754;
+
+		console.log(a);
+		```
+
+		#### result:
+
+		turn out the content inside `init.js` in the same directory:
+
+		```js
+		const $$button$__commonExports = (function (exports) {
+		 let months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+			let r = 7
+			var a = 66;
+
+			function Ads(arg){}
+
+			function asd(){}
+
+			function f(){}
+
+			class Asde{constructor(){}}
+
+			exports = { months, a, Ads, f, Asde };
+
+			return exports 
+		})({})
 
 
 
 
-const {  months, Ads  } = $$button$__commonExports;
+		const {  months, Ads  } = $$button$__commonExports;
 
-var a = months;
+		var a = months;
 
-var c = 754;
+		var c = 754;
 
-console.log(a);
-```
+		console.log(a);
+		```
+
+
+</details>
+
+
+
 
 ## Using as API (w/o gulp):
 
