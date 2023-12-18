@@ -3,10 +3,16 @@
 const gutil = require('gulp-util');
 const through = require('through2');
 
-const compile = require('./pack').combine;
 const path = require('path');
 
+// const compile = require('./pack').combine;
+const compile = require('neo-builder').build;
 
+/**
+ * 
+ * @param {Omit<Parameters<compile>[2], 'entryPoint'>} options
+ * @returns {ReturnType<typeof through.obj>}
+ */
 module.exports = (options) => {
   // Какие-то действия с опциями. Например, проверка их существования,
   // задание значения по умолчанию и т.д.
@@ -26,12 +32,14 @@ module.exports = (options) => {
       return;
     }
 
-    try {        
+    try {
 
-      let execpath = path.dirname(file.path)        
-
+      let execpath = path.dirname(file.path)
+      let entryPoint = path.basename(file.path)
+      
       var source = file.contents.toString();
-      source = compile(source, execpath, options)
+      
+      source = compile(source, execpath, {entryPoint, ...options})
 
       file.contents = Buffer.from(source);
       this.push(file);

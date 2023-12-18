@@ -8,4 +8,8 @@ function asd(){}
 
 export function f(){}
 
-export class Asde{constructor(){}}
+export class Asde{ constructor() { } }
+
+export default {
+    aaa: 1
+}

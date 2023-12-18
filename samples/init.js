@@ -1,28 +1,27 @@
 
 
-//@modules:
-
-
-const $$__commonExports = (function (exports) {
- let r = 7
-	function asd() { }
+const $button____commonExports = (function (exports) {
+ 	let months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+	let r = 7
+	var a = 66;
 	
-	let months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-	var a = 6;
-	function Ads(arg) { }
-	class Asde { }
-	function $default () {
-	    
-	}
+	function Ads(arg){}
 	
-	exports = { months, a, Ads, Asde, default: $default };
+	function asd(){}
+	
+	function f(){}
+	
+	class Asde{constructor(){}}
+	
+	exports = { months, a, Ads, f, Asde };
 	
 	return exports 
 })({})
+const com = $button____commonExports;
 
 
-//@init.ts: 
-const com = $$__commonExports;
+var a = com.months;
 
-var a = com.a;
-var c = 7540;
+var c = 754;
+
+

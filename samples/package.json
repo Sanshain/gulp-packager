@@ -1,0 +1,14 @@
+{
+  "name": "gulp-packager-test-samples",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "init.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sanshain",
+  "license": "ISC",
+  "dependencies": {
+    "msw": "^2.0.11"
+  }
+}

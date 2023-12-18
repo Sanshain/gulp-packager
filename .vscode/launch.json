@@ -12,6 +12,20 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}\\test.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "gulp test",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}\\tests",
+            // "program": "${workspaceFolder}\\node_modules\\npm-changelog\\bin\\bin.js",
+            "program": "${workspaceFolder}\\node_modules\\gulp\\bin\\gulp.js",
+            "args": [
+                // "--titled"
+            ]
         }
     ]
 }
