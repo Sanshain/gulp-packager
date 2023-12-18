@@ -62,6 +62,37 @@ var c = 7540;
 
 turn out the content inside `init.js` in the same directory:
 
+
+```js
+//@modules:
+
+
+const $$__commonExports = (function (exports) {
+ let r = 7
+	function asd() { }
+	
+	let months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+	var a = 6;
+	function Ads(arg) { }
+	class Asde { }
+	
+	exports = { months, a, Ads, Asde };
+	
+	return exports 
+})({})
+
+
+//@init.ts: 
+const com = $$__commonExports;
+
+var a = com.a;
+var c = 7540;
+```
+
+
+<detail>
+<summary>Previous:</summary>
+
 ```js
 {
 
@@ -105,13 +136,16 @@ let months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 function Ads(arg){
 
-	
 }
 
 var a = months;
 
 var c = 754;
 ```
+
+
+</detail>
+
 
 ## Attention
 

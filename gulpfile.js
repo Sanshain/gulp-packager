@@ -20,7 +20,7 @@ gulp.task('build', function() {
         .pipe(cache('samples/**/init.ts'))
         .pipe(rename((path) => path.extname = '.js'))                              
         .pipe(packager({ release : true }))   
-        // .pipe(ts())    
+        // .pipe(ts()) 
         .pipe(gulp.dest('./samples'))
 });
 
