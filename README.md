@@ -18,11 +18,12 @@ or
 npm i gulp-packager
 ```
 
-## Examples
+## Using with gulp:
 
 For descriptive reasons the examples below assumes the following task in `gulpfile.js`:
 
 ```ts
+
 gulp.task('build', function() {
 
     let src = './samples/**/init.ts';
@@ -36,111 +37,90 @@ gulp.task('build', function() {
 });
 ```
 
-### Example 1
+### gulp example: expand the detail:
+
+<details>
+<summary>gulp example</summary>
+
+
+#### source:
 
 `__common.ts` file: 
 
 ```javascript
+export let months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 let r = 7
+export var a = 66;
+
+export function Ads(arg){}
+
 function asd(){}
 
-export let months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-export var a = 6;
-export function Ads(arg){}
-export class Asde{}
+export function f(){}
+
+export class Asde{constructor(){}}
 ```
 
 and `init.ts`:
 
 ```typescript
-import * as com from "./__common"
+import { months, Ads } from "./button/__common"
 
-var a = com.a;
-var c = 7540;
+var a = months;
+
+var c = 754;
+
+console.log(a);
 ```
 
+#### result:
 
 turn out the content inside `init.js` in the same directory:
 
-
 ```js
-//@modules:
-
-
-const $$__commonExports = (function (exports) {
- let r = 7
-	function asd() { }
-	
+const $$button$__commonExports = (function (exports) {
 	let months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-	var a = 6;
-	function Ads(arg) { }
-	class Asde { }
-	
-	exports = { months, a, Ads, Asde };
-	
+	let r = 7
+	var a = 66;
+
+	function Ads(arg){}
+
+	function asd(){}
+
+	function f(){}
+
+	class Asde{constructor(){}}
+
+	exports = { months, a, Ads, f, Asde };
+
 	return exports 
 })({})
 
 
-//@init.ts: 
-const com = $$__commonExports;
-
-var a = com.a;
-var c = 7540;
-```
-
-
-<detail>
-<summary>Previous:</summary>
-
-```js
-{
-
-    let r = 7
-    function asd(){}
-
-    let months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    var a = 6;
-    function Ads(arg){}
-    class Asde{}
-
-    var com = {
-     		months:months,
-    		a:a,
-    		Ads:Ads,
-    		Asde:Asde 
-    }
-}
-
-var a = com.a;
-
-var c = 7540;
-```
-
-## Example 2
-
-`init.ts` contains:
-
-```js
-import {months, Ads} from "./__common"
+const {  months, Ads  } = $$button$__commonExports;
 
 var a = months;
 
 var c = 754;
+
+console.log(a);
 ```
 
-output: 
+
+</details>
+
+
+
+
+## Using as API (w/o gulp):
+
 
 ```js
-let months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const build = require('gulp-packager/pack').integrate
 
-function Ads(arg){
+const r = build("samples/init.ts")
+console.log(r);
 
-}
-
-var a = months;
-
-var c = 754;
 ```
 
 
@@ -149,26 +129,30 @@ var c = 754;
 
 ## Attention
 
-Recommends to use `import {name} from "./filename"` statement just for independent of any global variables classes and clear functions in imported file.
+## Notes
 
-despite the fact that the standard allows such actions, the use of global variables in object-oriented programming is considered a bad practice among developers.
-This is why we did not include support for this feature. 
 
-If you have many global constants or variables in the imported file, please use  `import * as name from './filename'` statement instead.
+* does not currently support importing npm packages. If your needs are beyond the scope of this package, suggest using [rollup](https://www.npmjs.com/package/rollup).
+* no sourcemap support (may be TODO)
+* not supported combined recipes of imports like following forms: 
+```
+import defaultExport, * as name from "./module-name";
+import defaultExport, { export } from "./module-name";
+```
 
-I should also note that this plugin does not currently support importing npm packages. If your needs are beyond the scope of this package, I suggest using [rollup](https://www.npmjs.com/package/rollup).
 
 ## options:
 
-- `release : true` - disable all comments inside importing file
+- `release : true` - removes comments all over inside built file
 
-## Advanced features: 
+
+## remarks: 
 
 Besides using `import * as name from './...'`, `import {name} from './...'` you can also use `import './...``. 
 But this option does not intended for types/class imports - what will you get a hint about in this case
 
 
-## Other featres: 
+## Advanced features: 
 
 If you need to skip some `import` statements, you should to wrap it into following comment with `lazy` keyword:
 
