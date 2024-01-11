@@ -1,10 +1,8 @@
 # Gulp-packager
 
-The simplest gulp plugin to build scripts supporting base import/export operation. 
+The simplest plugin to build scripts supporting base import/export expressions. Suitable for small simple vanilla javascript projects.
 
-- Suitable for vanilla js/ts project or for beginners
-
-- Includes a customized `gulpfile.js` with a typescript observer for quick start.
+Consider [example](https://github.com/Sanshain/gulp-packager/blob/bundler/tests/gulpfile.js) section to quick jump into.
 
 ## Installation
 
