@@ -1,6 +1,6 @@
 # Gulp-packager
 
-The simplest vanilla ts/js **packager** supporting base import/export operation. 
+The simplest gulp plugin to build scripts supporting base import/export operation. 
 
 - Suitable for vanilla js/ts project or for beginners
 
